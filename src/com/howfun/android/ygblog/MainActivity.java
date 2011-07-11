@@ -14,11 +14,17 @@ import org.htmlcleaner.XPatherException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity {
    private static final int MSG_REFRESH = 1;
@@ -26,7 +32,7 @@ public class MainActivity extends Activity {
    private static final String TAG = "MainActivity";
 
    private TextView mTextView = null;
-   private ListView mList = null;
+   private ListView mBlogListView = null;
    private ProgressDialog mProgress;
 
    private BlogAdapter mAdapter = null;
@@ -38,7 +44,7 @@ public class MainActivity extends Activity {
          case MSG_REFRESH:
             mProgress.dismiss();
             mAdapter.notifyDataSetChanged();
-            mList.setSelection(0);
+            mBlogListView.setSelection(0);
             break;
 
          default:
@@ -49,11 +55,14 @@ public class MainActivity extends Activity {
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
       super.onCreate(savedInstanceState);
       setContentView(R.layout.main);
       findViews();
-      mAdapter = new BlogAdapter(this, R.layout.list_item, mBlogList);
-      mList.setAdapter(mAdapter);
+      setupListeners();
+
+      mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
+      mBlogListView.setAdapter(mAdapter);
       mProgress = ProgressDialog.show(this, "", "loading,please wait", true);
       new Thread() {
          public void run() {
@@ -63,8 +72,26 @@ public class MainActivity extends Activity {
    }
 
    private void findViews() {
-      mTextView = (TextView) findViewById(R.id.text);
-      mList = (ListView) findViewById(R.id.list);
+      mBlogListView = (ListView) findViewById(R.id.blog_list);
+   }
+
+   private void setupListeners() {
+      if (mBlogListView != null) {
+         mBlogListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                  int position, long id) {
+               // TODO browse the blog
+               Blog blog = (Blog) parent.getAdapter().getItem(position);
+               Intent viewIntent = new Intent("android.intent.action.VIEW", Uri
+                     .parse(blog.getUrl()));
+               startActivity(viewIntent);
+
+            }
+
+         });
+      }
    }
 
    private void refreshBlog() {
