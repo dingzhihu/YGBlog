@@ -2,6 +2,7 @@ package com.howfun.android.ygblog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -14,6 +15,7 @@ import org.htmlcleaner.XPatherException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,8 +37,10 @@ public class MainActivity extends Activity {
    private ListView mBlogListView = null;
    private ProgressDialog mProgress;
 
+   private Context mCtx = null;
+   private BlogDB mBlogDb = null;
    private BlogAdapter mAdapter = null;
-   private ArrayList<Blog> mBlogList = new ArrayList<Blog>();
+   private List<Blog> mBlogList = null;
    private Handler mHandler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
@@ -58,17 +62,10 @@ public class MainActivity extends Activity {
       requestWindowFeature(Window.FEATURE_NO_TITLE);
       super.onCreate(savedInstanceState);
       setContentView(R.layout.main);
+
       findViews();
       setupListeners();
-
-      mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
-      mBlogListView.setAdapter(mAdapter);
-      mProgress = ProgressDialog.show(this, "", "loading,please wait", true);
-      new Thread() {
-         public void run() {
-            refreshBlog();
-         }
-      }.start();
+      init();
    }
 
    private void findViews() {
@@ -92,6 +89,27 @@ public class MainActivity extends Activity {
 
          });
       }
+   }
+
+   private void init() {
+      mCtx = this;
+      mBlogDb = new BlogDB(mCtx);
+      mBlogDb.open();
+      mBlogList = mBlogDb.getAllBlogs();
+      mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
+      mBlogListView.setAdapter(mAdapter);
+      if (mBlogList.size() == 0) {
+         // TODO
+      }
+   }
+
+   private void refresh() {
+      mProgress = ProgressDialog.show(this, "", "loading,please wait", true);
+      new Thread() {
+         public void run() {
+            refreshBlog();
+         }
+      }.start();
    }
 
    private void refreshBlog() {
@@ -164,13 +182,12 @@ public class MainActivity extends Activity {
                blog.setAuthor(author);
                blog.setCommentCount(commentCount);
                blog.setReadCount(readCount);
-
                mBlogList.add(blog);
             }
+            mBlogDb.addBlogs(mBlogList);
          }
          Message msg = new Message();
          msg.what = MSG_REFRESH;
-         msg.arg1 = items.length;
          mHandler.sendMessage(msg);
       } catch (ClientProtocolException e) {
          e.printStackTrace();

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class BlogAdapter extends ArrayAdapter<Blog> {
+   private static final String TAG = "BlogAdapter";
    private LayoutInflater mInflater;
    private Context mContext;
    private int mResource;
@@ -50,7 +51,7 @@ public class BlogAdapter extends ArrayAdapter<Blog> {
 
       holder.title.setText(item.getTitle());
       holder.date.setText(item.getPostDate());
-//      holder.image.setImageBitmap(getImageBitmap(item.getImgUrl()));
+      // holder.image.setImageBitmap(getImageBitmap(item.getImgUrl()));
 
       return convertView;
    }

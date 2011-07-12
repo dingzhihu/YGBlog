@@ -1,13 +1,17 @@
 package com.howfun.android.ygblog;
 
+import android.graphics.Bitmap;
+
 public class Blog {
 
+   private long mId;
    private String mTitle = "";
    private String mPostDate = "";
    private String mOutline = "";
    private String mUrl = "";
 
    private String mImgUrl = "";
+   private Bitmap mThumbnail = null;
    private String mAuthor = "";
    private String mCategory = "";
    private String mCategoryUrl = "";
@@ -34,6 +38,14 @@ public class Blog {
       mOutline = outline;
    }
 
+   public long getId(){
+      return mId;
+   }
+   
+   public void setId(long id){
+      mId = id;
+   }
+   
    public String getTitle() {
       return mTitle;
    }
@@ -74,6 +86,14 @@ public class Blog {
       mImgUrl = imgUrl;
    }
 
+   public Bitmap getThumbnail() {
+      return mThumbnail;
+   }
+
+   public void setThumbnail(Bitmap thumb) {
+      mThumbnail = thumb;
+   }
+
    public String getAuthor() {
       return mAuthor;
    }
@@ -109,16 +129,16 @@ public class Blog {
    public int getCommentCount() {
       return mCommentCount;
    }
-   
-   public void setCommentCount(int count){
+
+   public void setCommentCount(int count) {
       mCommentCount = count;
    }
 
    public int getReadCount() {
       return mReadCount;
    }
-   
-   public void setReadCount(int count){
+
+   public void setReadCount(int count) {
       mReadCount = count;
    }
 
