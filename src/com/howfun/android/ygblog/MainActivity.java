@@ -216,7 +216,6 @@ public class MainActivity extends Activity {
                imgUrl = imgUrlNode.getAttributeByName("src").toString();
                blog.setImgUrl(imgUrl);
                // get image thumbnail
-               blog.setThumbnail(Utils.getBitmapByUrl(imgUrl));
 
                Object[] categoryNodes = item
                      .evaluateXPath("/h6[@class='post-footer']/a[1]");
@@ -240,6 +239,7 @@ public class MainActivity extends Activity {
                mBlogList.add(blog);
                if (!mBlogDb.blogExists(title, date)) {
                   // Utils.log(TAG, "blog:"+title+"  does not exist");
+                  blog.setThumbnail(Utils.getBitmapByUrl(imgUrl)); //slow
                   mBlogDb.addBlog(blog);
                }
             }
