@@ -58,6 +58,7 @@
     	android:layout_width="fill_parent"
     	android:layout_height="30dp"
     	android:layout_alignParentBottom="true"
+    	android:background="#e6a07c"
     	android:visibility="visible" >
     	
     	<ImageView 

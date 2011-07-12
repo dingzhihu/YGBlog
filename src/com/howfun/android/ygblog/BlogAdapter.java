@@ -42,46 +42,25 @@ public class BlogAdapter extends ArrayAdapter<Blog> {
          convertView = mInflater.inflate(mResource, parent, false);
          holder = new ViewHolder();
          holder.title = (TextView) convertView.findViewById(R.id.title);
-         holder.date = (TextView) convertView.findViewById(R.id.date);
-         holder.image = (ImageView) convertView.findViewById(R.id.image);
+         holder.outline = (TextView) convertView.findViewById(R.id.outline);
+         holder.thumbnail = (ImageView) convertView.findViewById(R.id.image);
          convertView.setTag(holder);
       } else {
          holder = (ViewHolder) convertView.getTag();
       }
 
       holder.title.setText(item.getTitle());
-      holder.date.setText(item.getPostDate());
-      // holder.image.setImageBitmap(getImageBitmap(item.getImgUrl()));
+      holder.outline.setText(item.getOutline());
+//      holder.thumbnail.setImageBitmap(Utils.getBitmapByUrl(item.getImgUrl()));
+      holder.thumbnail.setImageBitmap(item.getThumbnail());
 
       return convertView;
    }
 
    private static class ViewHolder {
       TextView title;
-      TextView date;
-      ImageView image;
-   }
-
-   private Bitmap getImageBitmap(String url) {
-      URL imageUrl = null;
-      Bitmap bitmap = null;
-      try {
-         imageUrl = new URL(url);
-      } catch (MalformedURLException e) {
-         e.printStackTrace();
-      }
-
-      try {
-         HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
-         conn.setDoInput(true);
-         conn.connect();
-         InputStream is = conn.getInputStream();
-         bitmap = BitmapFactory.decodeStream(is);
-         is.close();
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      return bitmap;
+      TextView outline;
+      ImageView thumbnail;
    }
 
 }

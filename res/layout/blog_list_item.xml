@@ -4,20 +4,40 @@
 	android:layout_height="fill_parent"
 	android:background="#f6f4e9"
 	android:padding="6dip">
-	<TextView android:id="@+id/title"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content" 
-	android:textColor="#284259"
-	android:textSize="18sp" />
+	<LinearLayout 
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		
+		<RelativeLayout 
+		android:id="@+id/parent"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:paddingRight="10dp"
+		>
+		
+		<TextView 
+			android:id="@+id/title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:textColor="#284259"
+			android:textSize="18sp" />
 	
-	<TextView android:id="@+id/date"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_below="@id/title" 
-	android:textColor="#333"
-	android:textSize="10sp" />
-	<ImageView android:id="@+id/image"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:layout_alignParentRight="true" />
+		<TextView 
+			android:id="@+id/outline"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/title" 
+			android:textColor="#333"
+			android:textSize="15sp" />
+	</RelativeLayout>
+	<ImageView 
+		android:id="@+id/image"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="right"
+		android:src="@drawable/thumbnail" />
+	</LinearLayout>
+	
 </RelativeLayout>

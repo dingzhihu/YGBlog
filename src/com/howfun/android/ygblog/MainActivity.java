@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -86,6 +87,7 @@ public class MainActivity extends Activity {
       mEmptyBlogText = (TextView) findViewById(R.id.empty_blog);
       mInfoText = (TextView) findViewById(R.id.info_text);
       mBlogListView = (ListView) findViewById(R.id.blog_list);
+      mBlogListView.setCacheColorHint(0);
    }
 
    private void setupListeners() {
@@ -187,6 +189,8 @@ public class MainActivity extends Activity {
                TagNode imgUrlNode = (TagNode) imgUrlNodes[0];
                imgUrl = imgUrlNode.getAttributeByName("src").toString();
                blog.setImgUrl(imgUrl);
+               //get image thumbnail
+               blog.setThumbnail(Utils.getBitmapByUrl(imgUrl));
 
                Object[] categoryNodes = item
                      .evaluateXPath("/h6[@class='post-footer']/a[1]");
