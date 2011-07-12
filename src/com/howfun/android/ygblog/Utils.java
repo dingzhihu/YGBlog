@@ -14,6 +14,8 @@ import android.util.Log;
 
 public final class Utils {
 
+   protected static final String FULL_URL_REF = "full artical url ref";
+
    public static void log(String tag, String info) {
       if (BlogApplication.DEBUG) {
          Log.d("YGBlog >>>>>>>>>" + tag, "-------->" + info);

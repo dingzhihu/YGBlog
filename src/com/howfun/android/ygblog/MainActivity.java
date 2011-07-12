@@ -110,9 +110,13 @@ public class MainActivity extends Activity {
                   int position, long id) {
                // TODO browse the blog
                Blog blog = (Blog) parent.getAdapter().getItem(position);
-               Intent viewIntent = new Intent("android.intent.action.VIEW", Uri
-                     .parse(blog.getUrl()));
-               startActivity(viewIntent);
+               
+//               Intent viewIntent = new Intent("android.intent.action.VIEW", Uri
+//                     .parse(blog.getUrl()));
+               Intent intent = new Intent(MainActivity.this, FullArticle.class);
+               intent.putExtra(Utils.FULL_URL_REF, blog.getUrl());
+               
+               startActivity(intent);
 
             }
 
