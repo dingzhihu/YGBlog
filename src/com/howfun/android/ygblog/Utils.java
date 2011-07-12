@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,7 +40,7 @@ public final class Utils {
       }
       return null;
    }
-   
+
    public static Bitmap getBitmapByUrl(String url) {
       URL imageUrl = null;
       Bitmap bitmap = null;
@@ -60,5 +61,15 @@ public final class Utils {
          e.printStackTrace();
       }
       return bitmap;
+   }
+
+   public static String getDate() {
+      String date = "";
+      Calendar calender = Calendar.getInstance();
+      int year = calender.get(Calendar.YEAR);
+      int month = calender.get(Calendar.MONTH) + 1;
+      int day = calender.get(Calendar.DAY_OF_MONTH);
+      date = year + "/" + month + "/" + day;
+      return date;
    }
 }

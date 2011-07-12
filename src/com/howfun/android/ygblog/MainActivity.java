@@ -2,6 +2,7 @@ package com.howfun.android.ygblog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
@@ -17,6 +18,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,9 +36,14 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity {
-   private static final int MSG_REFRESH = 1;
+
+   private static final int MSG_REFRESH_DONE = 1;
+
+   private static final String PREFERENCES = "preferences";
    private static final String URL = "http://www.williamlong.info/";
    private static final String TAG = "MainActivity";
+
+   private static final String KEY_LAST_UPDATED = "lastUpdated";
 
    private RelativeLayout mTopBar = null;
    private RelativeLayout mBottomBar = null;
@@ -51,17 +58,21 @@ public class MainActivity extends Activity {
    private BlogDB mBlogDb = null;
    private BlogAdapter mAdapter = null;
    private List<Blog> mBlogList = null;
+
+   SharedPreferences mSettings = null;
    private Handler mHandler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
          switch (msg.what) {
-         case MSG_REFRESH:
+         case MSG_REFRESH_DONE:
             mProgress.dismiss();
             mEmptyBlogText.setVisibility(View.GONE);
             mAdapter.notifyDataSetChanged();
             mBlogListView.setSelection(0);
+            String updated = Utils.getDate();
+            mSettings.edit().putString(KEY_LAST_UPDATED, updated).commit();
+            setInfo("last updated: "+updated);
             break;
-
          default:
             break;
          }
@@ -106,9 +117,9 @@ public class MainActivity extends Activity {
             }
 
          });
-         if(mRefrshView != null){
+         if (mRefrshView != null) {
             mRefrshView.setOnClickListener(new OnClickListener() {
-               
+
                @Override
                public void onClick(View v) {
                   refresh();
@@ -128,10 +139,25 @@ public class MainActivity extends Activity {
       if (mBlogList.size() == 0) {
          mEmptyBlogText.setVisibility(View.VISIBLE);
       }
+
+      mSettings = getSharedPreferences(PREFERENCES, 0);
+      String lastUpdated = mSettings.getString(KEY_LAST_UPDATED, "");
+      if (!"".equals(lastUpdated)) {
+         setInfo("last updated: " + lastUpdated);
+      }else{
+         setInfo("no blog entry,please press refresh");
+      }
+   }
+
+   private void setInfo(String info) {
+      if (mInfoText != null) {
+         mInfoText.setText(info);
+      }
    }
 
    private void refresh() {
       mProgress = ProgressDialog.show(this, "", "loading,please wait", true);
+      setInfo("updating...");
       new Thread() {
          public void run() {
             refreshBlog();
@@ -189,7 +215,7 @@ public class MainActivity extends Activity {
                TagNode imgUrlNode = (TagNode) imgUrlNodes[0];
                imgUrl = imgUrlNode.getAttributeByName("src").toString();
                blog.setImgUrl(imgUrl);
-               //get image thumbnail
+               // get image thumbnail
                blog.setThumbnail(Utils.getBitmapByUrl(imgUrl));
 
                Object[] categoryNodes = item
@@ -218,9 +244,7 @@ public class MainActivity extends Activity {
                }
             }
          }
-         Message msg = new Message();
-         msg.what = MSG_REFRESH;
-         mHandler.sendMessage(msg);
+         mHandler.sendEmptyMessage(MSG_REFRESH_DONE);
       } catch (ClientProtocolException e) {
          e.printStackTrace();
       } catch (IOException e) {
@@ -256,5 +280,10 @@ public class MainActivity extends Activity {
       String temp = str.substring(0, end).trim();
       String comment = temp.substring(3);
       return Integer.parseInt(comment);
+   }
+   
+   public void onPause(){
+      super.onPause();
+      mBlogDb.close();
    }
 }

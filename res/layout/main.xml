@@ -74,8 +74,9 @@
     		android:id="@+id/info_text"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
+    		android:gravity="center_horizontal"
     		android:layout_alignParentRight="true"
-    		android:textSize="22sp"
+    		android:textSize="15sp"
     		android:textColor="#000000"
     		/>
     </RelativeLayout>
