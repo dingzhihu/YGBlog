@@ -50,7 +50,7 @@ public class BlogAdapter extends ArrayAdapter<Blog> {
 
       holder.title.setText(item.getTitle());
       holder.date.setText(item.getPostDate());
-      holder.image.setImageBitmap(getImageBitmap(item.getImgUrl()));
+//      holder.image.setImageBitmap(getImageBitmap(item.getImgUrl()));
 
       return convertView;
    }

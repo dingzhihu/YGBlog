@@ -11,21 +11,30 @@
     	
     	<TextView
     		android:layout_width="fill_parent"
-    		android:layout_height="wrap_content"
+    		android:layout_height="60dp"
     		android:gravity="center_vertical"
     		android:paddingLeft="10dip"
     		android:paddingTop="10dip"
     		android:textStyle="bold"
     		android:textSize="22sp"
-    		android:textColor="#ffffff"
+    		android:textColor="#484848"
     		android:text="@string/app_name"
-    		android:background="@drawable/gradient"
+    		android:background="@drawable/top"
     	/>
     </LinearLayout>
     <ListView 
     	android:id="@+id/blog_list"
     	android:layout_width="fill_parent" 
     	android:layout_height="fill_parent" 
-    	android:background="#ffffff"
+    	android:layout_weight="1"
+    	android:background="#f0ece0"
     />
+    <LinearLayout 
+    	android:id="@+id/bottom_bar"
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:background="@drawable/bottom"
+    	android:layout_height="40dp" />
+    	
+    	
 </LinearLayout>
