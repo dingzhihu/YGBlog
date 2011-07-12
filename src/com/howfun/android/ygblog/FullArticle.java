@@ -156,11 +156,11 @@ public class FullArticle extends Activity{
       if (mTitleView != null) {
          mTitleView.setText(mTitleStr);
       }
-//      mAdapter = new FullArticleAdapter(this, mAllContentList);
-//      if (mContentListView != null) {
-//       mContentListView.setAdapter(mAdapter);
-//      }
-//      mAdapter.notifyDataSetChanged();
+      mAdapter = new FullArticleAdapter(this, mAllContentList);
+      if (mContentListView != null) {
+       mContentListView.setAdapter(mAdapter);
+      }
+      mAdapter.notifyDataSetChanged();
    }
    
    public class ContentItem {
