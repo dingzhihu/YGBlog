@@ -121,6 +121,10 @@ public class BlogDB {
       if (cur != null) {
          cur.moveToFirst();
       }
+      if(cur.getCount() == 0){   //blog list is empty
+         cur.close();
+         return blogs;
+      }
       do {
          Blog blog = new Blog();
          blog.setId(cur.getLong(cur.getColumnIndex(KEY_ROWID)));
@@ -179,6 +183,23 @@ public class BlogDB {
       String sql = "UPDATE " + TABLE_BLOGS + " SET " + KEY_BODY + " = " + "'"
             + body + "'" + " WHERE " + KEY_ROWID + " = " + id;
       mDb.execSQL(sql);
+   }
+
+   // check blog exists or not by blog title and post date
+   public boolean blogExists(String title, String postDate) {
+      boolean flag = false;
+      List<Blog> blogs = getAllBlogs();
+      Iterator<Blog> it = blogs.iterator();
+      while (it.hasNext()) {
+         Blog blog = it.next();
+         String blogTitle = blog.getTitle();
+         String blogPostDate = blog.getPostDate();
+         if (title.equals(blogTitle) && (blogPostDate.equals(postDate))) {
+            flag = true;
+            return flag;
+         }
+      }
+      return flag;
    }
 
    private static class DatabaseHelper extends SQLiteOpenHelper {

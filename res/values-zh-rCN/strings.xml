@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">月光博客</string>
+    <string name="empty_blog">还没有博客呢，刷新一下吧～</string>
 </resources>

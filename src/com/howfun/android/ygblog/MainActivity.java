@@ -23,8 +23,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -33,7 +37,12 @@ public class MainActivity extends Activity {
    private static final String URL = "http://www.williamlong.info/";
    private static final String TAG = "MainActivity";
 
-   private TextView mTextView = null;
+   private RelativeLayout mTopBar = null;
+   private RelativeLayout mBottomBar = null;
+   private ImageView mRefrshView = null;
+   private ImageView mInfoView = null;
+   private TextView mEmptyBlogText = null;
+   private TextView mInfoText = null;
    private ListView mBlogListView = null;
    private ProgressDialog mProgress;
 
@@ -47,6 +56,7 @@ public class MainActivity extends Activity {
          switch (msg.what) {
          case MSG_REFRESH:
             mProgress.dismiss();
+            mEmptyBlogText.setVisibility(View.GONE);
             mAdapter.notifyDataSetChanged();
             mBlogListView.setSelection(0);
             break;
@@ -69,6 +79,12 @@ public class MainActivity extends Activity {
    }
 
    private void findViews() {
+      mTopBar = (RelativeLayout) findViewById(R.id.top_bar);
+      mBottomBar = (RelativeLayout) findViewById(R.id.bottom_bar);
+      mRefrshView = (ImageView) findViewById(R.id.refresh_view);
+      mInfoView = (ImageView) findViewById(R.id.info_view);
+      mEmptyBlogText = (TextView) findViewById(R.id.empty_blog);
+      mInfoText = (TextView) findViewById(R.id.info_text);
       mBlogListView = (ListView) findViewById(R.id.blog_list);
    }
 
@@ -88,6 +104,15 @@ public class MainActivity extends Activity {
             }
 
          });
+         if(mRefrshView != null){
+            mRefrshView.setOnClickListener(new OnClickListener() {
+               
+               @Override
+               public void onClick(View v) {
+                  refresh();
+               }
+            });
+         }
       }
    }
 
@@ -99,7 +124,7 @@ public class MainActivity extends Activity {
       mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
       mBlogListView.setAdapter(mAdapter);
       if (mBlogList.size() == 0) {
-         // TODO
+         mEmptyBlogText.setVisibility(View.VISIBLE);
       }
    }
 
@@ -183,8 +208,11 @@ public class MainActivity extends Activity {
                blog.setCommentCount(commentCount);
                blog.setReadCount(readCount);
                mBlogList.add(blog);
+               if (!mBlogDb.blogExists(title, date)) {
+                  // Utils.log(TAG, "blog:"+title+"  does not exist");
+                  mBlogDb.addBlog(blog);
+               }
             }
-            mBlogDb.addBlogs(mBlogList);
          }
          Message msg = new Message();
          msg.what = MSG_REFRESH;
