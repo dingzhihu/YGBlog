@@ -114,8 +114,10 @@ public class MainActivity extends Activity {
 //               Intent viewIntent = new Intent("android.intent.action.VIEW", Uri
 //                     .parse(blog.getUrl()));
                Intent intent = new Intent(MainActivity.this, FullArticle.class);
-               intent.putExtra(Utils.FULL_URL_REF, blog.getUrl());
-               
+               intent.putExtra(Utils.BLOG_ID_REF, blog.getId());
+               intent.putExtra(Utils.BLOG_URL_REF, blog.getUrl());
+               intent.putExtra(Utils.BLOG_TITLE_REF, blog.getTitle());
+               intent.putExtra(Utils.BLOG_POSTDATE_REF, blog.getPostDate());
                startActivity(intent);
 
             }
@@ -170,11 +172,15 @@ public class MainActivity extends Activity {
    }
 
    private void refreshBlog() {
+      mBlogList.clear();
       try {
          DefaultHttpClient httpClient = new DefaultHttpClient();
          HttpGet httpGet = new HttpGet(URL);
          ResponseHandler<String> responseHandler = new BasicResponseHandler();
          String responseBody = httpClient.execute(httpGet, responseHandler);
+         
+         
+         Utils.log(TAG, "body:============"+responseBody);
          HtmlCleaner cleaner = new HtmlCleaner();
          TagNode tagNode = cleaner.clean(responseBody);
          Object[] items = tagNode
@@ -240,12 +246,13 @@ public class MainActivity extends Activity {
                blog.setAuthor(author);
                blog.setCommentCount(commentCount);
                blog.setReadCount(readCount);
-               mBlogList.add(blog);
                if (!mBlogDb.blogExists(title, date)) {
                   // Utils.log(TAG, "blog:"+title+"  does not exist");
                   blog.setThumbnail(Utils.getBitmapByUrl(imgUrl)); //slow
-                  mBlogDb.addBlog(blog);
+                  long id = mBlogDb.addBlog(blog);
+                  blog.setId(id);
                }
+               mBlogList.add(blog);
             }
          }
          mHandler.sendEmptyMessage(MSG_REFRESH_DONE);

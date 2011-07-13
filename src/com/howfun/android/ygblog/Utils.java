@@ -14,7 +14,10 @@ import android.util.Log;
 
 public final class Utils {
 
-   protected static final String FULL_URL_REF = "full artical url ref";
+   protected static final String BLOG_ID_REF = "blog_id_ref";
+   protected static final String BLOG_URL_REF = "blog_url_ref";
+   protected static final String BLOG_TITLE_REF = "blog_title_ref";
+   protected static final String BLOG_POSTDATE_REF = "blog_postdate_ref";
 
    public static void log(String tag, String info) {
       if (BlogApplication.DEBUG) {
