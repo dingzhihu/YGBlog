@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -47,11 +48,15 @@ public class FullArticle extends Activity {
    private ProgressDialog mProgress;
 
    private WebView mWebView = null;
-   private String mTitleStr;
-   private TextView mTitleView;
+   private TextView mTitleText = null;
+   private TextView mPostdateText = null;
+   
+   private TextView mBodyText = null;
 
    private ListView mContentListView;
    private FullArticleAdapter mAdapter;
+
+   private BlogDB mBlogDb = null;
 
    private Handler mHandler = new Handler() {
       @Override
@@ -59,13 +64,15 @@ public class FullArticle extends Activity {
          switch (msg.what) {
          case MSG_REFRESH_DONE:
             mHandler.removeMessages(MSG_REFRESH_TIMEOUT);
+            String body = (String) msg.obj;
+            mBlogDb.setBlogBody(getIntent().getLongExtra(Utils.BLOG_ID_REF, 0),
+                  body);
+            setBlogTitle(getIntent().getStringExtra(Utils.BLOG_TITLE_REF));
+            setBlogPostdate(getIntent().getStringExtra(Utils.BLOG_POSTDATE_REF));
+            setBlogBody(body);
             mProgress.dismiss();
-            final String mimeType = "text/html";
-            final String encoding = "utf-8";
-            String data = (String)msg.obj;
-            mWebView.loadDataWithBaseURL(null, data, mimeType, encoding, null);
             break;
-            
+
          case MSG_REFRESH_TIMEOUT:
             mThread.interrupt();
             mProgress.dismiss();
@@ -75,16 +82,13 @@ public class FullArticle extends Activity {
          }
       }
    };
-   
-   private Thread mThread = new Thread(){
-      public void run(){
+
+   private Thread mThread = new Thread() {
+      public void run() {
          String url = getIntent().getStringExtra(Utils.BLOG_URL_REF);
-         mHandler.sendEmptyMessageDelayed(MSG_REFRESH_TIMEOUT, SECONDS*1000L);
-         try {
-            refreshBlogBody(url);
-         } catch (Exception e) {
-            e.printStackTrace();
-         }
+         // mHandler.sendEmptyMessageDelayed(MSG_REFRESH_TIMEOUT, SECONDS *
+         // 1000L);
+         refreshBlogBody(url);
       }
    };
 
@@ -93,78 +97,80 @@ public class FullArticle extends Activity {
       requestWindowFeature(Window.FEATURE_NO_TITLE);
       super.onCreate(savedInstanceState);
       setContentView(R.layout.full_article);
-      
       findViews();
       init();
    }
 
+   public void onDestroy() {
+      super.onDestroy();
+      mBlogDb.close();
+   }
+
    private void findViews() {
-      mTitleView = (TextView) findViewById(R.id.full_article_title);
-      mContentListView = (ListView) findViewById(R.id.full_article_list);
-
-      mWebView = (WebView) findViewById(R.id.web_view);
+      mTitleText = (TextView) findViewById(R.id.blog_title);
+      mPostdateText = (TextView) findViewById(R.id.blog_postdate);
+      mWebView = (WebView) findViewById(R.id.blog_body);
+      
+      mBodyText = (TextView) findViewById(R.id.blog_article);
    }
-   
+
    private void init() {
-
-      mTitleStr = "";
-
-      mAllContentList = new ArrayList<ContentItem>();
-      mImgList = new ArrayList<ImgItem>();
-
-      String url = "";
-
-      mProgress = ProgressDialog.show(this, "", "Loading...");
-
-      // mAdapter = new FullArticleAdapter(this, mAllContentList);
-
-      mThread.start();
-
+      mBlogDb = new BlogDB(this);
+      mBlogDb.open();
+      
+      long blogId = getIntent().getLongExtra(Utils.BLOG_ID_REF, 0);
+      String body = "";
+      if (blogId > 0) {
+         body = mBlogDb.getBlogBody(blogId);
+      }
+      if ("".equals(body)) {
+         mProgress = ProgressDialog.show(this, "", "Loading...");
+         mThread.start();
+      } else {
+         setBlogTitle(getIntent().getStringExtra(Utils.BLOG_TITLE_REF));
+         setBlogPostdate(getIntent().getStringExtra(Utils.BLOG_POSTDATE_REF));
+         setBlogBody(body);
+      }
 
    }
 
+   private void setBlogBody(String body) {
+      final String mimeType = "text/html";
+      final String encoding = "utf-8";
+      mWebView.loadDataWithBaseURL(null, body, mimeType, encoding, null);
+//      mBodyText.setText(body);
+   }
 
+   private void setBlogTitle(String title) {
+      mTitleText.setText(title);
+   }
 
-   private void refreshBlogBody(String strUrl) throws Exception {
-      URL url = new URL(strUrl);
-      HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-      InputStreamReader inStreamReader = new InputStreamReader(httpConn
-            .getInputStream());
-      BufferedReader bufReader = new BufferedReader(inStreamReader);
-      String line = "";
-      String data = "";
-      
-      
-      while ((line = bufReader.readLine()) != null) {
-         data += line + " ";
-      }
-      
+   private void setBlogPostdate(String date) {
+      mPostdateText.setText(date);
+   }
+
+   private void refreshBlogBody(String strUrl) {
+
+      String rawBody = Utils.getHtml(strUrl);
       HtmlCleaner cleaner = new HtmlCleaner();
-      TagNode tagNode = cleaner.clean(data);
-      StringBuffer bodyBuffer = null;
-      Object[] bodyNodes = tagNode.evaluateXPath("//div[@id='artibody'][1]");
+      TagNode tagNode = cleaner.clean(rawBody);
+      String body = null;
+      Object[] bodyNodes = {};
+      try {
+         bodyNodes = tagNode.evaluateXPath("//div[@id='artibody'][1]");
+      } catch (XPatherException e) {
+         e.printStackTrace();
+      }
       if (bodyNodes.length > 0) {
          TagNode bodyNode = (TagNode) bodyNodes[0];
-         bodyBuffer = bodyNode.getText();
+         body = bodyNode.getText().toString();
       }
-      String datas = "<p>" + bodyBuffer.toString() +"</p>";
+      String datas = body;
       Message msg = new Message();
       msg.what = MSG_REFRESH_DONE;
       msg.obj = datas;
       mHandler.sendMessage(msg);
    }
-
-   private void showContent() {
-      if (mTitleView != null) {
-         mTitleView.setText(mTitleStr);
-      }
-      mAdapter = new FullArticleAdapter(this, mAllContentList);
-      if (mContentListView != null) {
-         mContentListView.setAdapter(mAdapter);
-      }
-      mAdapter.notifyDataSetChanged();
-   }
-
 
    public class ContentItem {
 

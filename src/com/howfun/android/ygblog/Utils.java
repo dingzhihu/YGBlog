@@ -1,15 +1,21 @@
 package com.howfun.android.ygblog;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Message;
 import android.util.Log;
 
 public final class Utils {
@@ -76,5 +82,27 @@ public final class Utils {
       int day = calender.get(Calendar.DAY_OF_MONTH);
       date = year + "/" + month + "/" + day;
       return date;
+   }
+
+   public static String getHtml(String strUrl) {
+      String html = "";
+      try {
+         URL url = new URL(strUrl);
+         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+         InputStreamReader inStreamReader = new InputStreamReader(httpConn
+               .getInputStream());
+         BufferedReader bufReader = new BufferedReader(inStreamReader);
+         String line = "";
+         while ((line = bufReader.readLine()) != null) {
+            html += line + "\n";
+         }
+      } catch (MalformedURLException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         html = "fetch content error!";
+         e.printStackTrace();
+      }
+
+      return html;
    }
 }
