@@ -6,7 +6,7 @@
     >
     <RelativeLayout
     	android:id="@+id/top_bar"
-    	android:layout_height="80dp"
+    	android:layout_height="120dp"
     	android:layout_width="fill_parent"
     	android:background="@drawable/top">
     	

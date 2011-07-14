@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
    private static final int SECONDS = 60; // refresh time span
 
    private static final String PREFERENCES = "preferences";
-   private static final String URL = "http://www.williamlong.info/";
+//   private static final String URL = "http://www.williamlong.info/";
    private static final String TAG = "MainActivity";
 
    private static final String KEY_LAST_UPDATED = "lastUpdated";
@@ -81,7 +81,8 @@ public class MainActivity extends Activity {
             mBlogListView.setSelection(0);
             String updated = Utils.getDate();
             mSettings.edit().putString(KEY_LAST_UPDATED, updated).commit();
-            setInfo("last updated: " + updated);
+            int blogNumUpdated = msg.arg1;
+            setInfo(blogNumUpdated +" blogs updated");
             break;
 
          case MSG_REFRESH_TIMEOUT:
@@ -157,7 +158,7 @@ public class MainActivity extends Activity {
       mBlogDb = new BlogDB(mCtx);
       mBlogDb.open();
 //      mBlogList = mBlogDb.getAllBlogs();
-      mBlogList = mBlogDb.getBlogs(10);
+      mBlogList = mBlogDb.getBlogs(20);
       
       mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
       mBlogListView.setAdapter(mAdapter);
@@ -196,7 +197,7 @@ public class MainActivity extends Activity {
    private void refreshBlog() {
       List<Blog> newBlogList = new ArrayList<Blog>();
       try {
-         String responseBody = Utils.getHtml(URL);
+         String responseBody = Utils.getHtml(Utils.URL);
          HtmlCleaner cleaner = new HtmlCleaner();
          TagNode tagNode = cleaner.clean(responseBody);
          Object[] items = tagNode
@@ -277,7 +278,10 @@ public class MainActivity extends Activity {
             mBlogList.addAll(newBlogList);
             mBlogList.addAll(tempBlogList);
          }
-         mHandler.sendEmptyMessage(MSG_REFRESH_DONE);
+         Message msg = new Message();
+         msg.what = MSG_REFRESH_DONE;
+         msg.arg1 = newBlogList.size();
+         mHandler.sendMessage(msg);
       } catch (XPatherException e) {
          e.printStackTrace();
       }

@@ -19,6 +19,8 @@ import android.os.Message;
 import android.util.Log;
 
 public final class Utils {
+   
+   public static final String URL = "http://www.williamlong.info";
 
    protected static final String BLOG_ID_REF = "blog_id_ref";
    protected static final String BLOG_URL_REF = "blog_url_ref";

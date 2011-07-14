@@ -50,7 +50,7 @@ public class FullArticle extends Activity {
    private WebView mWebView = null;
    private TextView mTitleText = null;
    private TextView mPostdateText = null;
-   
+
    private TextView mBodyText = null;
 
    private ListView mContentListView;
@@ -110,14 +110,14 @@ public class FullArticle extends Activity {
       mTitleText = (TextView) findViewById(R.id.blog_title);
       mPostdateText = (TextView) findViewById(R.id.blog_postdate);
       mWebView = (WebView) findViewById(R.id.blog_body);
-      
+
       mBodyText = (TextView) findViewById(R.id.blog_article);
    }
 
    private void init() {
       mBlogDb = new BlogDB(this);
       mBlogDb.open();
-      
+
       long blogId = getIntent().getLongExtra(Utils.BLOG_ID_REF, 0);
       String body = "";
       if (blogId > 0) {
@@ -138,7 +138,7 @@ public class FullArticle extends Activity {
       final String mimeType = "text/html";
       final String encoding = "utf-8";
       mWebView.loadDataWithBaseURL(null, body, mimeType, encoding, null);
-//      mBodyText.setText(body);
+      // mBodyText.setText(body);
    }
 
    private void setBlogTitle(String title) {
@@ -154,22 +154,86 @@ public class FullArticle extends Activity {
       String rawBody = Utils.getHtml(strUrl);
       HtmlCleaner cleaner = new HtmlCleaner();
       TagNode tagNode = cleaner.clean(rawBody);
-      String body = null;
+      String body = "";
       Object[] bodyNodes = {};
       try {
-         bodyNodes = tagNode.evaluateXPath("//div[@id='artibody'][1]");
+         // bodyNodes = tagNode.evaluateXPath("//div[@id='artibody'][1]");
+         bodyNodes = tagNode.evaluateXPath("//div[@id='artibody'][1]/p");
       } catch (XPatherException e) {
          e.printStackTrace();
       }
       if (bodyNodes.length > 0) {
-         TagNode bodyNode = (TagNode) bodyNodes[0];
-         body = bodyNode.getText().toString();
+         // TagNode bodyNode = (TagNode) bodyNodes[0];
+         // body = bodyNode.getText().toString();
+//         for (int i = 0; i < bodyNodes.length; i++) {
+//            TagNode pNode = (TagNode) bodyNodes[i];
+//            String pText = pNode.getText().toString();
+//            body += getFormattedString(pText);
+//         }
+         body = getFormattedBlogBody(bodyNodes);
+         Utils.log(TAG, body);
       }
-      String datas = body;
       Message msg = new Message();
       msg.what = MSG_REFRESH_DONE;
-      msg.obj = datas;
+      msg.obj = body;
       mHandler.sendMessage(msg);
+   }
+
+   private String getFormattedString(String str) {
+      String prefix = "<p><h3>";
+      String suffix = "</h3></p>";
+      return prefix + str + suffix;
+   }
+   private String getStrongString(String str){
+      String prefix = "<p><h2>";
+      String suffix = "</h2></p>";
+      return prefix + str + suffix;
+   }
+
+   private String getImgSrc(String src) {
+      String str = "<img src=" + "\"" + src + "\"/>";
+      return str;
+   }
+
+   private String getFormattedBlogBody(Object[] bodyNodes) {
+      String body = "";
+      if (bodyNodes.length > 0) {
+         for (int i = 0; i < bodyNodes.length; i++) {
+            TagNode pNode = (TagNode) bodyNodes[i];
+            Object[] strongTextNodes = {};
+            Object[] imgNodes = {};
+            try {
+               strongTextNodes = pNode.evaluateXPath("/strong[1]");
+               imgNodes = pNode.evaluateXPath("//img[1]");
+            } catch (XPatherException e) {
+               e.printStackTrace();
+            }
+            if (imgNodes.length > 0) {
+               TagNode imgNode = (TagNode) imgNodes[0];
+               String src = imgNode.getAttributeByName("src");
+               String str = "";
+               if (src.contains(Utils.URL)) {
+                  str = src;
+               } else {
+                  str = Utils.URL + src;
+               }
+               body += getImgSrc(str);
+
+            } else if (strongTextNodes.length > 0) {
+               TagNode strongTextNode = (TagNode) strongTextNodes[0];
+               String text = strongTextNode.getText().toString();
+               if (!"".equals(text)) {
+                  String str = "<strong>" + text + "</strong>";
+                  body += getStrongString(str);
+               }
+            } else {
+               body += getFormattedString(pNode.getText().toString());
+            }
+
+         }
+      }
+
+      return body;
    }
 
    public class ContentItem {
