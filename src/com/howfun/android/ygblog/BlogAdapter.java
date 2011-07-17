@@ -51,7 +51,6 @@ public class BlogAdapter extends ArrayAdapter<Blog> {
 
       holder.title.setText(item.getTitle());
       holder.outline.setText(item.getOutline());
-//      holder.thumbnail.setImageBitmap(Utils.getBitmapByUrl(item.getImgUrl()));
       holder.thumbnail.setImageBitmap(item.getThumbnail());
 
       return convertView;
