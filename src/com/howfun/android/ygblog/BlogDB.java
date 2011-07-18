@@ -121,7 +121,7 @@ public class BlogDB {
       if (cur != null) {
          cur.moveToFirst();
       }
-      if(cur.getCount() == 0){   //blog list is empty
+      if (cur.getCount() == 0) { // blog list is empty
          cur.close();
          return blogs;
       }
@@ -179,10 +179,11 @@ public class BlogDB {
    }
 
    public void setBlogBody(long id, String body) {
-
-      String sql = "UPDATE " + TABLE_BLOGS + " SET " + KEY_BODY + " = " + "'"
-            + body + "'" + " WHERE " + KEY_ROWID + " = " + id;
-      mDb.execSQL(sql);
+      if (id > 0) {
+         String sql = "UPDATE " + TABLE_BLOGS + " SET " + KEY_BODY + " = "
+               + "'" + body + "'" + " WHERE " + KEY_ROWID + " = " + id;
+         mDb.execSQL(sql);
+      }
    }
 
    // check blog exists or not by blog title and post date
