@@ -14,13 +14,16 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.json.JSONArray;
 
+
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
 import android.util.Log;
 
 public final class Utils {
-   
+
    public static final String URL = "http://www.williamlong.info";
 
    protected static final String BLOG_ID_REF = "blog_id_ref";
@@ -28,57 +31,56 @@ public final class Utils {
    protected static final String BLOG_TITLE_REF = "blog_title_ref";
    protected static final String BLOG_POSTDATE_REF = "blog_postdate_ref";
 
+   private static final int TIMEOUT = 5 * 1000;
 
-	public static void log(String tag, String info) {
-		if (BlogApplication.DEBUG) {
-			Log.d("YGBlog >>>>>>>>>" + tag, "-------->" + info);
-		}
-	}
+   public static void log(String tag, String info) {
+      if (BlogApplication.DEBUG) {
+         Log.d("YGBlog >>>>>>>>>" + tag, "-------->" + info);
+      }
+   }
 
-	public static Bitmap getThumbnailBitmap(byte[] buffer) {
-		Bitmap thumbnail = null;
-		if (buffer != null) {
-			try {
-				thumbnail = BitmapFactory.decodeByteArray(buffer, 0,
-						buffer.length);
-			} catch (OutOfMemoryError e) {
-				e.printStackTrace();
-			}
-		}
-		return thumbnail;
-	}
+   public static Bitmap getThumbnailBitmap(byte[] buffer) {
+      Bitmap thumbnail = null;
+      if (buffer != null) {
+         try {
+            thumbnail = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
+         } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+         }
+      }
+      return thumbnail;
+   }
 
-	public static byte[] getThumbnailBlob(Bitmap bitmap) {
-		if (bitmap != null) {
-			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
-			return os.toByteArray();
-		}
-		return null;
-	}
+   public static byte[] getThumbnailBlob(Bitmap bitmap) {
+      if (bitmap != null) {
+         final ByteArrayOutputStream os = new ByteArrayOutputStream();
+         bitmap.compress(Bitmap.CompressFormat.PNG, 80, os);
+         return os.toByteArray();
+      }
+      return null;
+   }
 
-	public static Bitmap getBitmapByUrl(String url) {
-		URL imageUrl = null;
-		Bitmap bitmap = null;
-		try {
-			imageUrl = new URL(url);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+   public static Bitmap getBitmapByUrl(String url) {
+      URL imageUrl = null;
+      Bitmap bitmap = null;
+      try {
+         imageUrl = new URL(url);
+      } catch (MalformedURLException e) {
+         e.printStackTrace();
+      }
 
-		try {
-			HttpURLConnection conn = (HttpURLConnection) imageUrl
-					.openConnection();
-			conn.setDoInput(true);
-			conn.connect();
-			InputStream is = conn.getInputStream();
-			bitmap = BitmapFactory.decodeStream(is);
-			is.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return bitmap;
-	}
+      try {
+         HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+         conn.setDoInput(true);
+         conn.connect();
+         InputStream is = conn.getInputStream();
+         bitmap = BitmapFactory.decodeStream(is);
+         is.close();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      return bitmap;
+   }
 
    public static String getDate() {
       String date = "";
@@ -95,6 +97,11 @@ public final class Utils {
       try {
          URL url = new URL(strUrl);
          HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+
+         httpConn.setRequestMethod("GET");
+
+         httpConn.setConnectTimeout(TIMEOUT);
+
          InputStreamReader inStreamReader = new InputStreamReader(httpConn
                .getInputStream());
          BufferedReader bufReader = new BufferedReader(inStreamReader);
@@ -105,10 +112,16 @@ public final class Utils {
       } catch (MalformedURLException e) {
          e.printStackTrace();
       } catch (IOException e) {
-         html = "fetch content error!";
+         html = "";
          e.printStackTrace();
       }
 
       return html;
+   }
+
+   public static void showMessageDlg(Context context, int stringId) {
+      new AlertDialog.Builder(context).setIcon(R.drawable.icon).setTitle(
+            R.string.app_name).setMessage(stringId).setPositiveButton(
+            android.R.string.ok, null).show();
    }
 }

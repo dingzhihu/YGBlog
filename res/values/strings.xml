@@ -2,5 +2,12 @@
 <resources>
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">月光博客</string>
-    <string name="empty_blog">The blog is empty now,Press the refresh button and pull blogs down.</string>
+    <string name="empty_blog">还没有文章呢，刷新一下吧～</string>
+    
+    <string name="last_updated">上次更新时间：</string>
+    <string name="num_updated">更新文章数：</string>
+    <string name="error_updated">更新失败，确认网络连接</string>
+    <string name="updating">更新中。。。</string>
+    
+    <string name="about">月光博客android客户端\n\ndingzhihu1009@126.com\nherbert5069@yahoo.com.cn</string>
 </resources>

@@ -40,10 +40,7 @@ public class MainActivity extends Activity {
    private static final int MSG_REFRESH_DONE = 1;
    private static final int MSG_REFRESH_TIMEOUT = 2;
 
-   private static final int SECONDS = 60; // refresh time span
-
    private static final String PREFERENCES = "preferences";
-//   private static final String URL = "http://www.williamlong.info/";
    private static final String TAG = "MainActivity";
 
    private static final String KEY_LAST_UPDATED = "lastUpdated";
@@ -61,11 +58,6 @@ public class MainActivity extends Activity {
    private BlogDB mBlogDb = null;
    private BlogAdapter mAdapter = null;
    private List<Blog> mBlogList = null;
-   private Thread mThread = new Thread() {
-      public void run() {
-         refreshBlog();
-      }
-   };
 
    SharedPreferences mSettings = null;
 
@@ -82,13 +74,14 @@ public class MainActivity extends Activity {
             String updated = Utils.getDate();
             mSettings.edit().putString(KEY_LAST_UPDATED, updated).commit();
             int blogNumUpdated = msg.arg1;
-            setInfo(blogNumUpdated +" blogs updated");
+            setInfo(getResources().getString(R.string.num_updated)
+                  + blogNumUpdated);
             break;
 
          case MSG_REFRESH_TIMEOUT:
-            mThread.interrupt();
+
             mProgress.dismiss();
-            setInfo("update timeout.");
+            setInfo(getResources().getString(R.string.error_updated));
             break;
          default:
             break;
@@ -150,6 +143,16 @@ public class MainActivity extends Activity {
                }
             });
          }
+         
+         if(mInfoView != null){
+            mInfoView.setOnClickListener(new OnClickListener() {
+               
+               @Override
+               public void onClick(View v) {
+                  Utils.showMessageDlg(MainActivity.this, R.string.about);
+               }
+            });
+         }
       }
    }
 
@@ -157,9 +160,9 @@ public class MainActivity extends Activity {
       mCtx = this;
       mBlogDb = new BlogDB(mCtx);
       mBlogDb.open();
-//      mBlogList = mBlogDb.getAllBlogs();
+      // mBlogList = mBlogDb.getAllBlogs();
       mBlogList = mBlogDb.getBlogs(20);
-      
+
       mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
       mBlogListView.setAdapter(mAdapter);
       if (mBlogList.size() == 0) {
@@ -169,9 +172,9 @@ public class MainActivity extends Activity {
       mSettings = getSharedPreferences(PREFERENCES, 0);
       String lastUpdated = mSettings.getString(KEY_LAST_UPDATED, "");
       if (!"".equals(lastUpdated)) {
-         setInfo("last updated: " + lastUpdated);
+         setInfo(getResources().getString(R.string.last_updated) + lastUpdated);
       } else {
-         setInfo("no blog entry,please press refresh");
+         setInfo(getResources().getString(R.string.empty_blog));
       }
    }
 
@@ -183,10 +186,8 @@ public class MainActivity extends Activity {
 
    private void refresh() {
       mProgress = ProgressDialog.show(this, "", "loading,please wait", true);
-      setInfo("updating...");
-//      mHandler.sendEmptyMessageDelayed(MSG_REFRESH_TIMEOUT, SECONDS * 1000l);
-//      mThread.start();
-      
+      setInfo(getResources().getString(R.string.updating));
+
       new Thread() {
          public void run() {
             refreshBlog();
@@ -196,8 +197,13 @@ public class MainActivity extends Activity {
 
    private void refreshBlog() {
       List<Blog> newBlogList = new ArrayList<Blog>();
+      String responseBody = Utils.getHtml(Utils.URL);
+
+      if ("".equals(responseBody)) {
+         mHandler.sendEmptyMessage(MSG_REFRESH_TIMEOUT);
+         return;
+      }
       try {
-         String responseBody = Utils.getHtml(Utils.URL);
          HtmlCleaner cleaner = new HtmlCleaner();
          TagNode tagNode = cleaner.clean(responseBody);
          Object[] items = tagNode
@@ -314,7 +320,6 @@ public class MainActivity extends Activity {
       String comment = temp.substring(3);
       return Integer.parseInt(comment);
    }
-
 
    public void onDestroy() {
       super.onDestroy();
