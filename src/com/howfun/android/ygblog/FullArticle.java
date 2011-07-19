@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -50,6 +51,8 @@ public class FullArticle extends Activity {
    private WebView mWebView = null;
    private TextView mTitleText = null;
    private TextView mPostdateText = null;
+   
+   private TextView mNoBlogBodyText = null;
 
    private TextView mBodyText = null;
 
@@ -74,7 +77,7 @@ public class FullArticle extends Activity {
             break;
 
          case MSG_REFRESH_TIMEOUT:
-            mThread.interrupt();
+            mNoBlogBodyText.setVisibility(View.VISIBLE);
             mProgress.dismiss();
             break;
          default:
@@ -110,8 +113,9 @@ public class FullArticle extends Activity {
       mTitleText = (TextView) findViewById(R.id.blog_title);
       mPostdateText = (TextView) findViewById(R.id.blog_postdate);
       mWebView = (WebView) findViewById(R.id.blog_body);
+      
+      mNoBlogBodyText = (TextView) findViewById(R.id.no_body);
 
-      mBodyText = (TextView) findViewById(R.id.blog_article);
    }
 
    private void init() {
@@ -152,6 +156,10 @@ public class FullArticle extends Activity {
    private void refreshBlogBody(String strUrl) {
 
       String rawBody = Utils.getHtml(strUrl);
+      if("".equals(rawBody)){
+         mHandler.sendEmptyMessage(MSG_REFRESH_TIMEOUT);
+         return;
+      }
       HtmlCleaner cleaner = new HtmlCleaner();
       TagNode tagNode = cleaner.clean(rawBody);
       String body = "";
