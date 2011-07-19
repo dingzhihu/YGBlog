@@ -180,8 +180,8 @@ public class FullArticle extends Activity {
    }
 
    private String getFormattedString(String str) {
-      String prefix = "<p><h3>";
-      String suffix = "</h3></p>";
+      String prefix = "<p><h4>";
+      String suffix = "</h4></p>";
       return prefix + str + suffix;
    }
    private String getStrongString(String str){

@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
+import org.json.JSONArray;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
