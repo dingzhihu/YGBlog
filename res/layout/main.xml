@@ -28,7 +28,7 @@
     		android:layout_alignParentRight="true"
     		android:layout_centerVertical="true"
     		android:layout_marginRight="10dp"
-    		android:src="@drawable/refresh"
+    		android:src="@drawable/refresh_bg"
     		/>
     </RelativeLayout>
     <FrameLayout 
@@ -58,7 +58,7 @@
     	android:layout_width="fill_parent"
     	android:layout_height="30dp"
     	android:layout_alignParentBottom="true"
-    	android:background="#e6a07c"
+    	android:background="@drawable/bottom_bar"
     	android:visibility="visible" >
     	
     	<ImageView 
@@ -68,15 +68,15 @@
     		android:layout_alignParentLeft="true"
     		android:layout_centerVertical="true"
     		android:paddingLeft="10dp"
-    		android:src="@drawable/info"
+    		android:src="@drawable/info_bg"
     		/>
     	<TextView
     		android:id="@+id/info_text"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
-    		android:gravity="center_horizontal"
+    		android:gravity="center_vertical"
     		android:layout_alignParentRight="true"
-    		android:textSize="15sp"
+    		android:textSize="18sp"
     		android:textColor="#000000"
     		/>
     </RelativeLayout>
