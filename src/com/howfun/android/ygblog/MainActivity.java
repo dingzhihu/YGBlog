@@ -161,7 +161,7 @@ public class MainActivity extends Activity {
       mBlogDb = new BlogDB(mCtx);
       mBlogDb.open();
       // mBlogList = mBlogDb.getAllBlogs();
-      mBlogList = mBlogDb.getBlogs(20);
+      mBlogList = mBlogDb.getBlogs(30);
 
       mAdapter = new BlogAdapter(this, R.layout.blog_list_item, mBlogList);
       mBlogListView.setAdapter(mAdapter);
