@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:background="#f0ece0"
     >
+    
     <RelativeLayout
     	android:id="@+id/top_bar"
     	android:layout_height="80dp"
@@ -80,6 +81,10 @@
     		android:textColor="#000000"
     		/>
     </RelativeLayout>
-    	
+    <com.sosceo.android.ads.AdView
+      android:id="@+id/ad" android:layout_width="fill_parent"
+      android:textColor="#FFFFFF" 
+      android:background="@android:color/transparent"
+      android:layout_height="50px" /> 	
     	
 </RelativeLayout>

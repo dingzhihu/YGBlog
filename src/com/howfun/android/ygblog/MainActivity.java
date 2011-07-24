@@ -14,6 +14,8 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
+import com.sosceo.android.ads.AdView;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -98,8 +100,14 @@ public class MainActivity extends Activity {
       findViews();
       setupListeners();
       init();
+      sosceo();
    }
 
+   private void sosceo() {
+      AdView mAdView = (AdView) findViewById(R.id.ad);
+      mAdView.showAgreement();
+ 
+   }
    private void findViews() {
       mTopBar = (RelativeLayout) findViewById(R.id.top_bar);
       mBottomBar = (RelativeLayout) findViewById(R.id.bottom_bar);
