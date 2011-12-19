@@ -26,8 +26,8 @@
     		android:id="@+id/refresh_view"
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
+    		android:layout_alignParentBottom="true"
     		android:layout_alignParentRight="true"
-    		android:layout_centerVertical="true"
     		android:layout_marginRight="10dp"
     		android:src="@drawable/refresh_bg"
     		/>

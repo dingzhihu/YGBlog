@@ -9,5 +9,5 @@
     <string name="error_updated">更新失败，请确保网络连接</string>
     <string name="updating">更新中。。。</string>
     
-    <string name="about">月光博客Android客户端\n  v1.0.0 好风工作室 (2011)</string>
+    <string name="about">月光博客Android客户端\n  v1.0.1 好风工作室 (2011)</string>
 </resources>
